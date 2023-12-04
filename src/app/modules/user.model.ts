@@ -1,8 +1,8 @@
 import { Schema, model } from 'mongoose';
 import { User } from './user/user.interface';
 const userSchema = new Schema<User>({
-  userId: { type: Number, required: true },
-  username: { type: String, required: true },
+  userId: { type: Number, required: true, unique: true },
+  username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   fullName: {
     firstName: { type: String, required: true },
@@ -15,6 +15,7 @@ const userSchema = new Schema<User>({
   address: {
     street: { type: String, required: true },
     city: { type: String, required: true },
+    country: { type: String, required: true },
   },
 });
 export const UserModel = model<User>('User', userSchema);

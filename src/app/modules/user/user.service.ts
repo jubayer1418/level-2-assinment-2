@@ -10,15 +10,18 @@ const getAllUserFromDb = async () => {
   return result;
 };
 const getSingleUserFromDb = async (id: number) => {
-  const result = UserModel.findOne({ userId: id });
+  const result = await UserModel.findOne({ userId: id });
   return result;
 };
 const updateUserFromDb = async (id: number, updateData: object) => {
-  const result = UserModel.updateOne({ userId: id }, { $set: updateData });
+  const result = await UserModel.updateOne(
+    { userId: id },
+    { $set: updateData },
+  );
   return result;
 };
 const deleteUserFromDb = async (id: number) => {
-  const result = UserModel.deleteOne({ userId: id });
+  const result = await UserModel.deleteOne({ userId: id });
   return result;
 };
 export const userService = {
