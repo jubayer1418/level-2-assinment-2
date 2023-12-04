@@ -2,15 +2,29 @@ import { UserModel } from '../user.model';
 import { User } from './user.interface';
 
 const createUserIntoDb = async (user: User) => {
-  const result = await UserModel.create(user);
+  const data = await UserModel.create(user);
+  const result = await UserModel.findOne(
+    { userId: data.userId },
+    { password: 0 },
+  );
   return result;
 };
 const getAllUserFromDb = async () => {
-  const result = await UserModel.find();
+  const result = await UserModel.find(
+    {},
+    {
+      username: 1,
+      fullName: 1,
+      age: 1,
+      email: 1,
+      address: 1,
+      _id: 0,
+    },
+  );
   return result;
 };
 const getSingleUserFromDb = async (id: number) => {
-  const result = await UserModel.findOne({ userId: id });
+  const result = await UserModel.findOne({ userId: id }, { password: 0 });
   return result;
 };
 const updateUserFromDb = async (id: number, updateData: object) => {
