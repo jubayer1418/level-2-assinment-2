@@ -27,7 +27,7 @@ userSchema.pre('save', async function () {
   user.password = await bcrypt.hash(user.password, Number(config.bcrypt));
 });
 userSchema.post('save', function () {
-  console.log('ldfjjf');
+  console.log('pore');
 });
 
 userSchema.statics.isUserExists = async function (id: number) {
