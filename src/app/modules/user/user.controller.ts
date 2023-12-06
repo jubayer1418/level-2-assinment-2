@@ -27,7 +27,7 @@ const allUser = async (req: Request, res: Response) => {
     const result = await userService.getAllUserFromDb();
     res.status(200).json({
       success: true,
-      message: 'users fetched successfully!',
+      message: 'Users fetched successfully!',
       data: result,
     });
   } catch (err: any) {
