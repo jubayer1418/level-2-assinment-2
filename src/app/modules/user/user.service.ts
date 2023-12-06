@@ -1,7 +1,7 @@
 import { UserModel } from '../user.model';
-import { User } from './user.interface';
+import { TUser } from './user.interface';
 
-const createUserIntoDb = async (user: User) => {
+const createUserIntoDb = async (user: TUser) => {
   const data = await UserModel.create(user);
   const result = await UserModel.findOne(
     { userId: data.userId },
@@ -24,19 +24,32 @@ const getAllUserFromDb = async () => {
   return result;
 };
 const getSingleUserFromDb = async (id: number) => {
-  const result = await UserModel.findOne({ userId: id }, { password: 0 });
-  return result;
+  if (await UserModel.findOne({ userId: id })) {
+    const result = await UserModel.findOne({ userId: id }, { password: 0 });
+    return result;
+  } else {
+    await UserModel.isUserExists(id);
+    throw new Error('User not found!');
+  }
 };
 const updateUserFromDb = async (id: number, updateData: object) => {
-  const result = await UserModel.updateOne(
-    { userId: id },
-    { $set: updateData },
-  );
-  return result;
+  if (await UserModel.findOne({ userId: id })) {
+    await UserModel.updateOne({ userId: id }, { $set: updateData });
+    const result = await UserModel.findOne({ userId: id }, { password: 0 });
+    return result;
+  } else {
+    await UserModel.isUserExists(id);
+    throw new Error('User not found!');
+  }
 };
 const deleteUserFromDb = async (id: number) => {
-  const result = await UserModel.deleteOne({ userId: id });
-  return result;
+  if (await UserModel.findOne({ userId: id })) {
+    const result = await UserModel.deleteOne({ userId: id });
+    return result;
+  } else {
+    await UserModel.isUserExists(id);
+    throw new Error('User not found!');
+  }
 };
 export const userService = {
   createUserIntoDb,

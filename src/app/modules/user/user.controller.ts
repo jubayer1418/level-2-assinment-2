@@ -10,8 +10,8 @@ const createController = async (req: Request, res: Response) => {
       message: 'User created successfully!',
       data: result,
     });
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+    console.log({ err });
   }
 };
 const allUser = async (req: Request, res: Response) => {
@@ -36,8 +36,16 @@ const singleUser = async (req: Request, res: Response) => {
       message: 'user fetched successfully!',
       data: result,
     });
-  } catch (error) {
-    console.log(error);
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: 'User not found',
+      error: {
+        code: 404,
+        description: err.message,
+      },
+    });
+    console.log({ err });
   }
 };
 const updateUser = async (req: Request, res: Response) => {
@@ -51,8 +59,16 @@ const updateUser = async (req: Request, res: Response) => {
       message: 'user updated successfully!',
       data: result,
     });
-  } catch (error) {
-    console.log(error);
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: 'User not found',
+      error: {
+        code: 404,
+        description: err.message,
+      },
+    });
+    console.log({ err });
   }
 };
 const deleteUser = async (req: Request, res: Response) => {
@@ -65,8 +81,16 @@ const deleteUser = async (req: Request, res: Response) => {
       message: 'user deleted successfully!',
       data: null,
     });
-  } catch (error) {
-    console.log(error);
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: 'User not found',
+      error: {
+        code: 404,
+        description: err.message,
+      },
+    });
+    console.log({ err });
   }
 };
 export const userController = {

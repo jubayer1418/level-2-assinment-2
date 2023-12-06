@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-this-alias */
 import { Schema, model } from 'mongoose';
-import { User } from './user/user.interface';
-const userSchema = new Schema<User>({
+import { TUser, TUserModel } from './user/user.interface';
+const userSchema = new Schema<TUser, TUserModel>({
   userId: { type: Number, required: true, unique: true },
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
@@ -18,4 +19,17 @@ const userSchema = new Schema<User>({
     country: { type: String, required: true },
   },
 });
-export const UserModel = model<User>('User', userSchema);
+
+// userSchema.pre('save', async function () {
+//   const user = this;
+//   user.password = await bcrypt.hash(user.password, Number(config.bcrypt));
+// });
+userSchema.statics.isUserExists = async function (id: number) {
+  const existingUser = await UserModel.findOne({ userId: id });
+  return existingUser;
+};
+// userSchema.post('save', function () {
+//   console.log('ldfjjf');
+// });
+
+export const UserModel = model<TUser, TUserModel>('User', userSchema);
