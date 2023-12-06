@@ -6,6 +6,7 @@ export type TUser = {
   password: string;
   fullName: { firstName: string; lastName: string };
   age: number;
+
   email: string;
   isActive: boolean;
   hobbies: [string, string];

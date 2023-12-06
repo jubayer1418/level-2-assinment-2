@@ -1,17 +1,25 @@
 import { Request, Response } from 'express';
 import { userService } from './user.service';
+import userValidationSchema from './user.validation';
 
 const createController = async (req: Request, res: Response) => {
   try {
     const user = req.body.user;
-    const result = await userService.createUserIntoDb(user);
+    const userValid = userValidationSchema.parse(user);
+    const result = await userService.createUserIntoDb(userValid);
+
     res.status(200).json({
       success: true,
       message: 'User created successfully!',
       data: result,
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err) {
-    console.log({ err });
+    console.log(err);
+    res.status(500).json({
+      success: false,
+      message: err,
+    });
   }
 };
 const allUser = async (req: Request, res: Response) => {
@@ -22,8 +30,16 @@ const allUser = async (req: Request, res: Response) => {
       message: 'users fetched successfully!',
       data: result,
     });
-  } catch (error) {
-    console.log(error);
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: 'User not found',
+      error: {
+        code: 404,
+        description: err.message,
+      },
+    });
+    console.log({ err });
   }
 };
 const singleUser = async (req: Request, res: Response) => {

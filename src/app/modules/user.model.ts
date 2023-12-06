@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
+import bcrypt from 'bcrypt';
 import { Schema, model } from 'mongoose';
+import config from '../config';
 import { TUser, TUserModel } from './user/user.interface';
 const userSchema = new Schema<TUser, TUserModel>({
   userId: { type: Number, required: true, unique: true },
@@ -20,16 +22,16 @@ const userSchema = new Schema<TUser, TUserModel>({
   },
 });
 
-// userSchema.pre('save', async function () {
-//   const user = this;
-//   user.password = await bcrypt.hash(user.password, Number(config.bcrypt));
-// });
+userSchema.pre('save', async function () {
+  const user = this;
+  user.password = await bcrypt.hash(user.password, Number(config.bcrypt));
+});
+userSchema.post('save', function () {
+  console.log('ldfjjf');
+});
+
 userSchema.statics.isUserExists = async function (id: number) {
-  const existingUser = await UserModel.findOne({ userId: id });
+  const existingUser = await User.findOne({ userId: id });
   return existingUser;
 };
-// userSchema.post('save', function () {
-//   console.log('ldfjjf');
-// });
-
-export const UserModel = model<TUser, TUserModel>('User', userSchema);
+export const User = model<TUser, TUserModel>('User', userSchema);

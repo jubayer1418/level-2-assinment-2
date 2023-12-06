@@ -1,16 +1,13 @@
-import { UserModel } from '../user.model';
+import { User } from '../user.model';
 import { TUser } from './user.interface';
 
 const createUserIntoDb = async (user: TUser) => {
-  const data = await UserModel.create(user);
-  const result = await UserModel.findOne(
-    { userId: data.userId },
-    { password: 0 },
-  );
+  const data = await User.create(user);
+  const result = await User.findOne({ userId: data.userId }, { password: 0 });
   return result;
 };
 const getAllUserFromDb = async () => {
-  const result = await UserModel.find(
+  const result = await User.find(
     {},
     {
       username: 1,
@@ -24,30 +21,30 @@ const getAllUserFromDb = async () => {
   return result;
 };
 const getSingleUserFromDb = async (id: number) => {
-  if (await UserModel.findOne({ userId: id })) {
-    const result = await UserModel.findOne({ userId: id }, { password: 0 });
+  if (await User.findOne({ userId: id })) {
+    const result = await User.findOne({ userId: id }, { password: 0 });
     return result;
   } else {
-    await UserModel.isUserExists(id);
+    await User.isUserExists(id);
     throw new Error('User not found!');
   }
 };
 const updateUserFromDb = async (id: number, updateData: object) => {
-  if (await UserModel.findOne({ userId: id })) {
-    await UserModel.updateOne({ userId: id }, { $set: updateData });
-    const result = await UserModel.findOne({ userId: id }, { password: 0 });
+  if (await User.findOne({ userId: id })) {
+    await User.updateOne({ userId: id }, { $set: updateData });
+    const result = await User.findOne({ userId: id }, { password: 0 });
     return result;
   } else {
-    await UserModel.isUserExists(id);
+    await User.isUserExists(id);
     throw new Error('User not found!');
   }
 };
 const deleteUserFromDb = async (id: number) => {
-  if (await UserModel.findOne({ userId: id })) {
-    const result = await UserModel.deleteOne({ userId: id });
+  if (await User.findOne({ userId: id })) {
+    const result = await User.deleteOne({ userId: id });
     return result;
   } else {
-    await UserModel.isUserExists(id);
+    await User.isUserExists(id);
     throw new Error('User not found!');
   }
 };
