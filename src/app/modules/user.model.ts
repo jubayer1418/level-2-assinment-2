@@ -20,12 +20,23 @@ const userSchema = new Schema<TUser, TUserModel>({
     city: { type: String, required: true },
     country: { type: String, required: true },
   },
+  orders: [
+    {
+      productName: { type: String },
+      price: { type: Number },
+      quantity: { type: Number },
+    },
+  ],
 });
 
 userSchema.pre('save', async function () {
   const user = this;
   user.password = await bcrypt.hash(user.password, Number(config.bcrypt));
 });
+// userSchema.pre('updateOne', async function () {
+//   const user = this;
+//   user
+// });
 userSchema.post('save', function () {
   console.log('pore');
 });

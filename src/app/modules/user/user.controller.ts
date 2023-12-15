@@ -87,6 +87,29 @@ const updateUser = async (req: Request, res: Response) => {
     console.log({ err });
   }
 };
+const updateOrderUser = async (req: Request, res: Response) => {
+  try {
+    const data = req.body;
+    const id = parseInt(req.params.userId);
+    console.log(data, id);
+    await userService.updateUserOrderFromDb(id, data);
+    res.status(200).json({
+      success: true,
+      message: 'Order created successfully!',
+      data: null,
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: 'User not found',
+      error: {
+        code: 404,
+        description: err.message,
+      },
+    });
+    console.log({ err });
+  }
+};
 const deleteUser = async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.userId);
@@ -109,10 +132,57 @@ const deleteUser = async (req: Request, res: Response) => {
     console.log({ err });
   }
 };
+const getOrderController = async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.userId);
+    console.log(id);
+    const orders = await userService.getUserOrderFromDb(id);
+    res.status(200).json({
+      success: true,
+      message: 'Order fetched successfully!',
+      data: orders,
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: 'User not found',
+      error: {
+        code: 404,
+        description: err.message,
+      },
+    });
+    console.log({ err });
+  }
+};
+const getTotalOrderController = async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.userId);
+    console.log(id);
+    const orders = await userService.getTotalOrderFromDb(id);
+    res.status(200).json({
+      success: true,
+      message: 'Total price calculated successfully!',
+      data: orders,
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: 'User not found',
+      error: {
+        code: 404,
+        description: err.message,
+      },
+    });
+    console.log({ err });
+  }
+};
 export const userController = {
   createController,
   allUser,
   singleUser,
   updateUser,
   deleteUser,
+  updateOrderUser,
+  getOrderController,
+  getTotalOrderController,
 };
