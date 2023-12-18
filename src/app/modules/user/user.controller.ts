@@ -1,8 +1,12 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { userService } from './user.service';
 import userValidationSchema from './user.validation';
 
-const createController = async (req: Request, res: Response) => {
+const createController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const user = req.body.user;
     const userValid = userValidationSchema.parse(user);
@@ -15,14 +19,10 @@ const createController = async (req: Request, res: Response) => {
     });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err) {
-    console.log(err);
-    res.status(500).json({
-      success: false,
-      message: err,
-    });
+    next(err);
   }
 };
-const allUser = async (req: Request, res: Response) => {
+const allUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await userService.getAllUserFromDb();
     res.status(200).json({
@@ -30,41 +30,25 @@ const allUser = async (req: Request, res: Response) => {
       message: 'Users fetched successfully!',
       data: result,
     });
-  } catch (err: any) {
-    res.status(500).json({
-      success: false,
-      message: 'User not found',
-      error: {
-        code: 404,
-        description: err.message,
-      },
-    });
-    console.log({ err });
+  } catch (err) {
+    next(err);
   }
 };
-const singleUser = async (req: Request, res: Response) => {
+const singleUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = parseInt(req.params.userId);
-    console.log(id);
+
     const result = await userService.getSingleUserFromDb(id);
     res.status(200).json({
       success: true,
       message: 'user fetched successfully!',
       data: result,
     });
-  } catch (err: any) {
-    res.status(500).json({
-      success: false,
-      message: 'User not found',
-      error: {
-        code: 404,
-        description: err.message,
-      },
-    });
-    console.log({ err });
+  } catch (err) {
+    next(err);
   }
 };
-const updateUser = async (req: Request, res: Response) => {
+const updateUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = req.body.user;
     const id = parseInt(req.params.userId);
@@ -75,105 +59,77 @@ const updateUser = async (req: Request, res: Response) => {
       message: 'user updated successfully!',
       data: result,
     });
-  } catch (err: any) {
-    res.status(500).json({
-      success: false,
-      message: 'User not found',
-      error: {
-        code: 404,
-        description: err.message,
-      },
-    });
-    console.log({ err });
+  } catch (err) {
+    next(err);
   }
 };
-const updateOrderUser = async (req: Request, res: Response) => {
+const updateOrderUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const data = req.body;
     const id = parseInt(req.params.userId);
-    console.log(data, id);
+
     await userService.updateUserOrderFromDb(id, data);
     res.status(200).json({
       success: true,
       message: 'Order created successfully!',
       data: null,
     });
-  } catch (err: any) {
-    res.status(500).json({
-      success: false,
-      message: 'User not found',
-      error: {
-        code: 404,
-        description: err.message,
-      },
-    });
-    console.log({ err });
+  } catch (err) {
+    next(err);
   }
 };
-const deleteUser = async (req: Request, res: Response) => {
+const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = parseInt(req.params.userId);
-    console.log(id);
+
     await userService.deleteUserFromDb(id);
     res.status(200).json({
       success: true,
       message: 'user deleted successfully!',
       data: null,
     });
-  } catch (err: any) {
-    res.status(500).json({
-      success: false,
-      message: 'User not found',
-      error: {
-        code: 404,
-        description: err.message,
-      },
-    });
-    console.log({ err });
+  } catch (err) {
+    next(err);
   }
 };
-const getOrderController = async (req: Request, res: Response) => {
+const getOrderController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const id = parseInt(req.params.userId);
-    console.log(id);
+
     const orders = await userService.getUserOrderFromDb(id);
     res.status(200).json({
       success: true,
       message: 'Order fetched successfully!',
       data: orders,
     });
-  } catch (err: any) {
-    res.status(500).json({
-      success: false,
-      message: 'User not found',
-      error: {
-        code: 404,
-        description: err.message,
-      },
-    });
-    console.log({ err });
+  } catch (err) {
+    next(err);
   }
 };
-const getTotalOrderController = async (req: Request, res: Response) => {
+const getTotalOrderController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const id = parseInt(req.params.userId);
-    console.log(id);
+
     const orders = await userService.getTotalOrderFromDb(id);
     res.status(200).json({
       success: true,
       message: 'Total price calculated successfully!',
       data: orders,
     });
-  } catch (err: any) {
-    res.status(500).json({
-      success: false,
-      message: 'User not found',
-      error: {
-        code: 404,
-        description: err.message,
-      },
-    });
-    console.log({ err });
+  } catch (err) {
+    next(err);
   }
 };
 export const userController = {

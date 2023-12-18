@@ -2,48 +2,57 @@ import { User } from '../user.model';
 import { TUser } from './user.interface';
 
 const createUserIntoDb = async (user: TUser) => {
-  const data = await User.create(user);
-  const result = await User.findOne({ userId: data.userId }, { password: 0 });
-  return result;
+  if (await User.isUserExists(user.userId)) {
+    throw new Error('User is already exists!');
+  } else {
+    const data = await User.create(user);
+    const result = await User.findOne({ userId: data.userId }).select([
+      '-password',
+      '-orders',
+      '-_id',
+    ]);
+    return result;
+  }
 };
 const getAllUserFromDb = async () => {
-  const result = await User.find(
-    {},
-    {
-      username: 1,
-      fullName: 1,
-      age: 1,
-      email: 1,
-      address: 1,
-      _id: 0,
-    },
-  );
+  const result = await User.find().select([
+    'username',
+    'fullName',
+    'age',
+    'email',
+    'address',
+    '-_id',
+  ]);
   return result;
 };
 const getSingleUserFromDb = async (id: number) => {
-  if (await User.findOne({ userId: id })) {
-    const result = await User.findOne({ userId: id }, { password: 0 });
-    return result;
-  } else {
-    await User.isUserExists(id);
+  const isUser = await User.findOne({ userId: id }).select([
+    '-password',
+    '-orders',
+    '-_id',
+  ]);
+  if (!isUser) {
     throw new Error('User not found!');
+  } else {
+    return isUser;
   }
 };
-const updateUserFromDb = async (id: number, updateData: object) => {
-  if (await User.findOne({ userId: id })) {
-    await User.updateOne({ userId: id }, { $set: updateData });
-    const result = await User.findOne({ userId: id }, { password: 0 });
-    return result;
-  } else {
-    await User.isUserExists(id);
-    throw new Error('User not found!');
-  }
+const updateUserFromDb = async (
+  userId: number,
+  updateData: Record<string, unknown>,
+) => {
+  const result = await User.findOneAndUpdate(
+    { userId },
+    { ...updateData },
+  ).select(['-password', '-orders', '-_id']);
+
+  return result;
 };
+
 const updateUserOrderFromDb = async (
   id: number,
   updateData: Record<string, unknown>,
 ) => {
-  console.log(id, updateData);
   await User.findOneAndUpdate(
     { userId: id },
     { $push: { orders: updateData } },
@@ -70,13 +79,8 @@ const getTotalOrderFromDb = async (id: number) => {
   return total[0];
 };
 const deleteUserFromDb = async (id: number) => {
-  if (await User.findOne({ userId: id })) {
-    const result = await User.deleteOne({ userId: id });
-    return result;
-  } else {
-    await User.isUserExists(id);
-    throw new Error('User not found!');
-  }
+  const result = await User.findOneAndDelete({ userId: id });
+  return result;
 };
 export const userService = {
   createUserIntoDb,
