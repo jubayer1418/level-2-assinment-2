@@ -54,6 +54,9 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
     const id = parseInt(req.params.userId);
 
     const result = await userService.updateUserFromDb(id, data);
+    if (!result) {
+      throw new Error('User not found!');
+    }
     res.status(200).json({
       success: true,
       message: 'user updated successfully!',
@@ -69,10 +72,12 @@ const updateOrderUser = async (
   next: NextFunction,
 ) => {
   try {
-    const data = req.body;
     const id = parseInt(req.params.userId);
 
-    await userService.updateUserOrderFromDb(id, data);
+    const result = await userService.updateUserOrderFromDb(id, req.body);
+    if (!result) {
+      throw new Error('User not found!');
+    }
     res.status(200).json({
       success: true,
       message: 'Order created successfully!',
@@ -86,7 +91,10 @@ const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = parseInt(req.params.userId);
 
-    await userService.deleteUserFromDb(id);
+    const data = await userService.deleteUserFromDb(id);
+    if (!data) {
+      throw new Error('User not found!');
+    }
     res.status(200).json({
       success: true,
       message: 'user deleted successfully!',
@@ -105,6 +113,9 @@ const getOrderController = async (
     const id = parseInt(req.params.userId);
 
     const orders = await userService.getUserOrderFromDb(id);
+    if (!orders) {
+      throw new Error('User not found!');
+    }
     res.status(200).json({
       success: true,
       message: 'Order fetched successfully!',
@@ -123,6 +134,9 @@ const getTotalOrderController = async (
     const id = parseInt(req.params.userId);
 
     const orders = await userService.getTotalOrderFromDb(id);
+    if (!orders) {
+      throw new Error('User not found!');
+    }
     res.status(200).json({
       success: true,
       message: 'Total price calculated successfully!',

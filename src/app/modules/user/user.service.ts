@@ -1,6 +1,7 @@
+import bcrypt from 'bcrypt';
+import config from '../../config';
 import { User } from '../user.model';
 import { TUser } from './user.interface';
-
 const createUserIntoDb = async (user: TUser) => {
   if (await User.isUserExists(user.userId)) {
     throw new Error('User is already exists!');
@@ -41,9 +42,14 @@ const updateUserFromDb = async (
   userId: number,
   updateData: Record<string, unknown>,
 ) => {
+  updateData.password = await bcrypt.hash(
+    updateData.password as string,
+    Number(config.bcrypt),
+  );
   const result = await User.findOneAndUpdate(
     { userId },
     { ...updateData },
+    { new: true },
   ).select(['-password', '-orders', '-_id']);
 
   return result;
