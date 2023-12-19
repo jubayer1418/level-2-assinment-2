@@ -8,8 +8,7 @@ const createController = async (
   next: NextFunction,
 ) => {
   try {
-    const user = req.body.user;
-    const userValid = userValidationSchema.parse(user);
+    const userValid = userValidationSchema.parse(req.body);
     const result = await userService.createUserIntoDb(userValid);
 
     res.status(200).json({
@@ -50,10 +49,9 @@ const singleUser = async (req: Request, res: Response, next: NextFunction) => {
 };
 const updateUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const data = req.body.user;
     const id = parseInt(req.params.userId);
 
-    const result = await userService.updateUserFromDb(id, data);
+    const result = await userService.updateUserFromDb(id, req.body);
     if (!result) {
       throw new Error('User not found!');
     }
