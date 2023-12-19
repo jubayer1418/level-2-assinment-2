@@ -42,15 +42,16 @@ const updateUserFromDb = async (
   userId: number,
   updateData: Record<string, unknown>,
 ) => {
-  updateData.password = await bcrypt.hash(
-    updateData.password as string,
-    Number(config.bcrypt),
-  );
-  const result = await User.findOneAndUpdate(
-    { userId },
-    { ...updateData },
-    { new: true },
-  ).select(['-password', '-orders', '-_id']);
+  if (updateData.password) {
+    updateData.password = await bcrypt.hash(
+      updateData.password as string,
+      Number(config.bcrypt),
+    );
+  }
+  const result = await User.findOneAndUpdate({ userId }, updateData, {
+    new: true,
+    runValidators: true,
+  }).select(['-password', '-orders', '-_id']);
 
   return result;
 };
@@ -59,10 +60,14 @@ const updateUserOrderFromDb = async (
   id: number,
   updateData: Record<string, unknown>,
 ) => {
-  await User.findOneAndUpdate(
+  const result = await User.findOneAndUpdate(
     { userId: id },
     { $push: { orders: updateData } },
   );
+  if (!result) {
+    throw new Error('User not found!');
+  }
+  return true;
 };
 const getUserOrderFromDb = async (id: number) => {
   const allProduct = await User.findOne({ userId: id }).select('orders -_id');

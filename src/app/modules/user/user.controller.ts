@@ -72,10 +72,8 @@ const updateOrderUser = async (
   try {
     const id = parseInt(req.params.userId);
 
-    const result = await userService.updateUserOrderFromDb(id, req.body);
-    if (!result) {
-      throw new Error('User not found!');
-    }
+    await userService.updateUserOrderFromDb(id, req.body);
+
     res.status(200).json({
       success: true,
       message: 'Order created successfully!',
