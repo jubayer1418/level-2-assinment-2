@@ -41,13 +41,13 @@ const orderSchema = new Schema<TOrder>(
 const userSchema = new Schema<TUser, TUserModel>({
   userId: {
     type: Number,
-    required: [true, 'Userid is requored!'],
     unique: true,
+    required: [true, 'Userid is requored!'],
   },
   username: {
     type: String,
-    required: [true, 'User name is requored!'],
     unique: true,
+    required: [true, 'User name is requored!'],
   },
   password: { type: String, required: [true, 'password is requored!'] },
   fullName: {

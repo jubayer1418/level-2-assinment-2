@@ -9,8 +9,11 @@ const createController = async (
 ) => {
   try {
     const userValid = userValidationSchema.parse(req.body);
+    console.log(userValid);
     const result = await userService.createUserIntoDb(userValid);
-
+    if (!result) {
+      throw new Error('User not found!');
+    }
     res.status(200).json({
       success: true,
       message: 'User created successfully!',

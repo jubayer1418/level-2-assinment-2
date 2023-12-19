@@ -3,18 +3,15 @@ import config from '../../config';
 import { User } from '../user.model';
 import { TUser } from './user.interface';
 const createUserIntoDb = async (user: TUser) => {
-  if (await User.isUserExists(user.userId)) {
-    throw new Error('User is already exists!');
-  } else {
-    const data = await User.create(user);
-    const result = await User.findOne({ userId: data.userId }).select([
-      '-password',
-      '-orders',
-      '-_id',
-    ]);
-    return result;
-  }
+  const data = await User.create(user);
+  const result = await User.findOne({ userId: data.userId }).select([
+    '-password',
+    '-orders',
+    '-_id',
+  ]);
+  return result;
 };
+
 const getAllUserFromDb = async () => {
   const result = await User.find().select([
     'username',
